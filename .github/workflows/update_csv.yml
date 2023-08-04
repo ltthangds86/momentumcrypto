@@ -1,5 +1,4 @@
-name: run CSV every minute
-
+name: run top50 CSV 
 on:
   schedule:
     - cron: "15 00 * * *"
@@ -26,7 +25,7 @@ jobs:
           pip install datetime
 
       - name: Run the script
-        run: python copi.py
+        run: python updatetop50.py
 
       - name: Set up Git
         run: |
@@ -39,7 +38,7 @@ jobs:
         run: |
           git remote set-url origin "https://${{ secrets.SECRETTT }}@github.com/ltthangds86/momentumcrypto.git"
           git add .
-          git commit -m "Update CSV file"
+          git commit -m "Update top50 CSV file"
           git push origin main
 
 

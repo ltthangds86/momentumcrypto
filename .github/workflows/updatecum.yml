@@ -1,4 +1,4 @@
-name: run after CSV every minute
+name: run prepared visual
 
 on:
   schedule:
@@ -36,5 +36,5 @@ jobs:
         run: |
           git remote set-url origin "https://${{ secrets.SECRETTT }}@github.com/ltthangds86/momentumcrypto.git"
           git add .
-          git commit -m "Update after CSV file"
+          git commit -m "Update prepared CSV file"
           git push origin main
