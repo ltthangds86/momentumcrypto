@@ -1,0 +1,40 @@
+name: run after CSV every minute
+
+on:
+  schedule:
+    - cron: "45 00 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2.3.1
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy
+          pip install pandas
+
+      - name: Run the script
+        run: python updatecum.py
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+
+      - name: Commit and Push changes
+        env:
+          SECRETTT: ${{ secrets.SECRETTT }}
+        run: |
+          git remote set-url origin "https://${{ secrets.SECRETTT }}@github.com/ltthangds86/momentumcrypto.git"
+          git add .
+          git commit -m "Update after CSV file"
+          git push origin main
