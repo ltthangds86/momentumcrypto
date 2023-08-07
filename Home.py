@@ -10,6 +10,7 @@ st.markdown('psma_15, psma_20, psma_25, psma_30: Current price divided by the av
 st.markdown('smaf_2_20, smaf_3_20,smaf_3_25,smaf_5_30: The average price of 2,3,3,5 days ago divided by the average price of 20,20,25,30 days ago - 1 ')
 st.markdown('rrp_15, rrp_20, rrp_25, rrp_30: The current price minus the 15-day average price divided by the 15-day standard deviation ')
 st.markdown('dsh_15, dsh_20,dsh_25,dsh_30: - The number of days since reaching the highest price within the 15-day period')
+st.markdown('Rank is the ordering from lowest to highest, where the cryptocurrency with the lowest momentum value will have a rank of 1')
 
 st.markdown('----')
 st.markdown('# Page return and mom20 ')
