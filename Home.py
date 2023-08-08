@@ -17,11 +17,11 @@ st.markdown('# Page return and mom20 ')
 st.markdown('Visualizations showing the relationship momentum factor mom_20 with return')
 
 st.markdown('----')
-st.markdown('# Page Anti Momentum ')
-st.markdown('"Visualizations depicting the relationship between return and momentum factors in reverse investment."')
+st.markdown('# Page Momentum ')
+st.markdown('Visualizations depicting the relationship between return and momentum factors in momentum investment')
 
 st.markdown('----')
 st.markdown('# Page LSTM model ')
-st.markdown('Which Machine Learning Model is used in this webapp?')
-st.markdown('LSTM is used in this webapp.')
+st.markdown('Using LSTM model to predict crypto price ')
+
 
