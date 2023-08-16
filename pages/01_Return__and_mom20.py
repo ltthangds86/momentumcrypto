@@ -19,15 +19,15 @@ df['mom_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) -
 df['mom_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) - np.log(x.shift(20)))
 df['mom_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) - np.log(x.shift(25)))
 #SMA factor
-df['psma_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=15).mean()-1)
-df['psma_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=20).mean()-1)
-df['psma_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=25).mean()-1)
-df['psma_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=30).mean()-1)
+df['psma_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=15).mean())
+df['psma_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=20).mean())
+df['psma_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=25).mean())
+df['psma_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=30).mean())
 # SMA ratio factor
-df['smaf_2_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=2).mean()/ x.rolling(window=20).mean()-1)
-df['smaf_3_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=20).mean()-1)
-df['smaf_3_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=25).mean()-1)
-df['smaf_5_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=5).mean()/ x.rolling(window=30).mean()-1)
+df['smaf_2_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=2).mean()/ x.rolling(window=20).mean())
+df['smaf_3_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=20).mean())
+df['smaf_3_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=25).mean())
+df['smaf_5_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=5).mean()/ x.rolling(window=30).mean())
 # Rolling price zscore over recent history
 df['rrp_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=15).mean())/ x.rolling(window=15).std())
 df['rrp_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=20).mean())/ x.rolling(window=20).std())
@@ -69,7 +69,7 @@ def create_universe(fde, n=10, min_constituents=10):
                       .values[0]
     # Flag universe constituents
     fde['cap_rank'] = fde.groupby('date')['market_cap'].rank(ascending=False)
-    fde = fde.sort_values('date').groupby('ticker').apply(lambda x: x.assign(is_index=(x['cap_rank'].shift() <= n) & (x['date'] >= start_date))) \
+    fde = fde.sort_values('date').groupby('ticker').apply(lambda x: x.assign(is_index=(x['cap_rank'].shift(0) <= n) & (x['date'] >= start_date))) \
                   .dropna(subset=['is_index']).reset_index(drop=True)
     fde=fde.dropna()
     return fde

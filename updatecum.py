@@ -21,31 +21,39 @@ df['mom_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) -
 df['mom_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) - np.log(x.shift(20)))
 df['mom_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) - np.log(x.shift(25)))
 #SMA factor
-df['psma_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=15).mean()-1)
-df['psma_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=20).mean()-1)
-df['psma_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=25).mean()-1)
-df['psma_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=30).mean()-1)
+df['psma_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=15).mean())
+df['psma_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=20).mean())
+df['psma_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=25).mean())
+df['psma_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=30).mean())
 # SMA ratio factor
-df['smaf_2_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=2).mean()/ x.rolling(window=20).mean()-1)
-df['smaf_3_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=20).mean()-1)
-df['smaf_3_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=25).mean()-1)
-df['smaf_5_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=5).mean()/ x.rolling(window=30).mean()-1)
+df['smaf_2_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=2).mean()/ x.rolling(window=20).mean())
+df['smaf_3_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=20).mean())
+df['smaf_3_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=25).mean())
+df['smaf_5_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=5).mean()/ x.rolling(window=30).mean())
 # Rolling price zscore over recent history
 df['rrp_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=15).mean())/ x.rolling(window=15).std())
 df['rrp_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=20).mean())/ x.rolling(window=20).std())
 df['rrp_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=25).mean())/ x.rolling(window=25).std())
 df['rrp_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=30).mean())/ x.rolling(window=30).std())
-# Rolling_days_since_high(x)
-def rolling_days_since_high(x):
-    idx_of_high = np.argmax(x)
-    days_since_high = len(x) - idx_of_high
-    return days_since_high
+fde=copy.deepcopy(df)
+def create_universe(fde, n=10, min_constituents=10):
+    # Get first date where we have min_constituents
+    start_date = fde.groupby('date').size().reset_index(name='count') \
+                      .query('count >= @min_constituents') \
+                      .agg({'date': 'min'}) \
+                      .values[0]
+    # Flag universe constituents
+    fde['cap_rank'] = fde.groupby('date')['market_cap'].rank(ascending=False)
+    fde = fde.sort_values('date').groupby('ticker').apply(lambda x: x.assign(is_index=(x['cap_rank'].shift(0) <= n) & (x['date'] >= start_date))) \
+                  .dropna(subset=['is_index']).reset_index(drop=True)
+    fde=fde.dropna()
+    return fde
 
-# daysincehigh=-rolling
-df['dsh_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=15).apply(rolling_days_since_high, raw=True) )
-df['dsh_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=20).apply(rolling_days_since_high, raw=True) )
-df['dsh_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=25).apply(rolling_days_since_high, raw=True) )
-df['dsh_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=30).apply(rolling_days_since_high, raw=True) )
+fde=create_universe(fde, n=10, min_constituents=10)
+voldf = fde[fde['is_index'] == True]
+voldf.to_csv("voldf.csv", index=False)
+
+
 # Calculate returns
 df['fwd_log_return_1'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x.shift(-1) / x))
 df['fwd_log_return_2'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x.shift(-2) / x.shift(-1)))
@@ -71,7 +79,7 @@ def create_universe(fde, n=10, min_constituents=10):
                       .values[0]
     # Flag universe constituents
     fde['cap_rank'] = fde.groupby('date')['market_cap'].rank(ascending=False)
-    fde = fde.sort_values('date').groupby('ticker').apply(lambda x: x.assign(is_index=(x['cap_rank'].shift() <= n) & (x['date'] >= start_date))) \
+    fde = fde.sort_values('date').groupby('ticker').apply(lambda x: x.assign(is_index=(x['cap_rank'].shift(0) <= n) & (x['date'] >= start_date))) \
                   .dropna(subset=['is_index']).reset_index(drop=True)
     fde=fde.dropna()
     return fde
@@ -304,88 +312,4 @@ cumrrp_30 = cumrrp_30.groupby(['date', 'n_day_ahead']).apply(lambda x: x.assign(
 )).reset_index(drop=True)
 cumrrp_30 = cumrrp_30.groupby('n_day_ahead').apply(lambda x: x.sort_values('date').assign(cumreturn=x['log_factor_return'].cumsum()))
 cumrrp_30.to_csv("cumrrp_30.csv", index=False)
-cumdsh_15 = pd.melt(filtered_data, id_vars=['date','dsh_15'], value_vars=filtered_data.filter(like='fwd_return_').columns,
-                   var_name='target', value_name='simplereturn')
-# Extract n_day_ahead from target
-cumdsh_15['n_day_ahead'] = cumdsh_15['target'].apply(lambda x: x[11])
-# Group by date and n_day_ahead, and calculate rank, weight, scaled_weight, and weighted_fwd_returns
-cumdsh_15 = cumdsh_15.groupby(['date', 'n_day_ahead']).apply(lambda x: x.assign(
-    rank=x['dsh_15'].rank(),
-    weight=x['dsh_15'].rank() - np.mean(x['dsh_15'].rank()),
-    scaled_weight=(x['dsh_15'].rank() - np.mean(x['dsh_15'].rank())) / np.sum(np.abs(x['dsh_15'].rank() - np.mean(x['dsh_15'].rank()))),
-    weighted_fwd_returns=x['simplereturn'] * (x['dsh_15'].rank() - np.mean(x['dsh_15'].rank())) / np.sum(np.abs(x['dsh_15'].rank() - np.mean(x['dsh_15'].rank()))),
-    log_factor_return=np.log(np.sum(x['simplereturn'] * (x['dsh_15'].rank() - np.mean(x['dsh_15'].rank())) / np.sum(np.abs(x['dsh_15'].rank() - np.mean(x['dsh_15'].rank())))) + 1)
-)).reset_index(drop=True)
-cumdsh_15 = cumdsh_15.groupby('n_day_ahead').apply(lambda x: x.sort_values('date').assign(cumreturn=x['log_factor_return'].cumsum()))
-cumdsh_15.to_csv("cumdsh_15.csv", index=False)
-cumdsh_20 = pd.melt(filtered_data, id_vars=['date','dsh_20'], value_vars=filtered_data.filter(like='fwd_return_').columns,
-                   var_name='target', value_name='simplereturn')
-# Extract n_day_ahead from target
-cumdsh_20['n_day_ahead'] = cumdsh_20['target'].apply(lambda x: x[11])
-# Group by date and n_day_ahead, and calculate rank, weight, scaled_weight, and weighted_fwd_returns
-cumdsh_20 = cumdsh_20.groupby(['date', 'n_day_ahead']).apply(lambda x: x.assign(
-    rank=x['dsh_20'].rank(),
-    weight=x['dsh_20'].rank() - np.mean(x['dsh_20'].rank()),
-    scaled_weight=(x['dsh_20'].rank() - np.mean(x['dsh_20'].rank())) / np.sum(np.abs(x['dsh_20'].rank() - np.mean(x['dsh_20'].rank()))),
-    weighted_fwd_returns=x['simplereturn'] * (x['dsh_20'].rank() - np.mean(x['dsh_20'].rank())) / np.sum(np.abs(x['dsh_20'].rank() - np.mean(x['dsh_20'].rank()))),
-    log_factor_return=np.log(np.sum(x['simplereturn'] * (x['dsh_20'].rank() - np.mean(x['dsh_20'].rank())) / np.sum(np.abs(x['dsh_20'].rank() - np.mean(x['dsh_20'].rank())))) + 1)
-)).reset_index(drop=True)
-cumdsh_20 = cumdsh_20.groupby('n_day_ahead').apply(lambda x: x.sort_values('date').assign(cumreturn=x['log_factor_return'].cumsum()))
-cumdsh_20.to_csv("cumdsh_20.csv", index=False)
-cumdsh_25 = pd.melt(filtered_data, id_vars=['date','dsh_25'], value_vars=filtered_data.filter(like='fwd_return_').columns,
-                   var_name='target', value_name='simplereturn')
-# Extract n_day_ahead from target
-cumdsh_25['n_day_ahead'] = cumdsh_25['target'].apply(lambda x: x[11])
-# Group by date and n_day_ahead, and calculate rank, weight, scaled_weight, and weighted_fwd_returns
-cumdsh_25 = cumdsh_25.groupby(['date', 'n_day_ahead']).apply(lambda x: x.assign(
-    rank=x['dsh_25'].rank(),
-    weight=x['dsh_25'].rank() - np.mean(x['dsh_25'].rank()),
-    scaled_weight=(x['dsh_25'].rank() - np.mean(x['dsh_25'].rank())) / np.sum(np.abs(x['dsh_25'].rank() - np.mean(x['dsh_25'].rank()))),
-    weighted_fwd_returns=x['simplereturn'] * (x['dsh_25'].rank() - np.mean(x['dsh_25'].rank())) / np.sum(np.abs(x['dsh_25'].rank() - np.mean(x['dsh_25'].rank()))),
-    log_factor_return=np.log(np.sum(x['simplereturn'] * (x['dsh_25'].rank() - np.mean(x['dsh_25'].rank())) / np.sum(np.abs(x['dsh_25'].rank() - np.mean(x['dsh_25'].rank())))) + 1)
-)).reset_index(drop=True)
-cumdsh_25 = cumdsh_25.groupby('n_day_ahead').apply(lambda x: x.sort_values('date').assign(cumreturn=x['log_factor_return'].cumsum()))
-cumdsh_25.to_csv("cumdsh_25.csv", index=False)
-cumdsh_30 = pd.melt(filtered_data, id_vars=['date','dsh_30'], value_vars=filtered_data.filter(like='fwd_return_').columns,
-                   var_name='target', value_name='simplereturn')
-# Extract n_day_ahead from target
-cumdsh_30['n_day_ahead'] = cumdsh_30['target'].apply(lambda x: x[11])
-# Group by date and n_day_ahead, and calculate rank, weight, scaled_weight, and weighted_fwd_returns
-cumdsh_30 = cumdsh_30.groupby(['date', 'n_day_ahead']).apply(lambda x: x.assign(
-    rank=x['dsh_30'].rank(),
-    weight=x['dsh_30'].rank() - np.mean(x['dsh_30'].rank()),
-    scaled_weight=(x['dsh_30'].rank() - np.mean(x['dsh_30'].rank())) / np.sum(np.abs(x['dsh_30'].rank() - np.mean(x['dsh_30'].rank()))),
-    weighted_fwd_returns=x['simplereturn'] * (x['dsh_30'].rank() - np.mean(x['dsh_30'].rank())) / np.sum(np.abs(x['dsh_30'].rank() - np.mean(x['dsh_30'].rank()))),
-    log_factor_return=np.log(np.sum(x['simplereturn'] * (x['dsh_30'].rank() - np.mean(x['dsh_30'].rank())) / np.sum(np.abs(x['dsh_30'].rank() - np.mean(x['dsh_30'].rank())))) + 1)
-)).reset_index(drop=True)
-cumdsh_30 = cumdsh_30.groupby('n_day_ahead').apply(lambda x: x.sort_values('date').assign(cumreturn=x['log_factor_return'].cumsum()))
-cumdsh_30.to_csv("cumdsh_30.csv", index=False)
-cummega = pd.melt(filtered_data, id_vars=['date','ticker','fwd_return_1','fwd_return_2','fwd_return_3'], value_vars=['mom_10','mom_15','mom_20','mom_25', 'psma_15','psma_20','psma_25','psma_30', 'smaf_2_20','smaf_3_20','smaf_3_25','smaf_5_30', 'rrp_15','rrp_20','rrp_25','rrp_30', 'dsh_15', 'dsh_20', 'dsh_25', 'dsh_30'],
-                   var_name='feature', value_name='value')
 
-cummega = cummega.groupby(['date', 'feature']).apply(lambda x: x.assign(
-    rank=x['value'].rank(),
-    weight=x['value'].rank() - np.mean(x['value'].rank()),
-    scaled_weight=(x['value'].rank() - np.mean(x['value'].rank())) / np.sum(np.abs(x['value'].rank() - np.mean(x['value'].rank()))),
-    weighted_fwd_return_1=x['fwd_return_1'] * (x['value'].rank() - np.mean(x['value'].rank())) / np.sum(np.abs(x['value'].rank() - np.mean(x['value'].rank()))),
-    weighted_fwd_return_2=x['fwd_return_2'] * (x['value'].rank() - np.mean(x['value'].rank())) / np.sum(np.abs(x['value'].rank() - np.mean(x['value'].rank()))),
-    weighted_fwd_return_3=x['fwd_return_3'] * (x['value'].rank() - np.mean(x['value'].rank())) / np.sum(np.abs(x['value'].rank() - np.mean(x['value'].rank()))),
-)).reset_index(drop=True)
-cummega['megafactor'] = cummega.groupby(['date', 'ticker'])['rank'].transform('mean')
-cummega['weight'] = cummega['megafactor'] - np.mean(cummega['megafactor'])
-scaled_weight_sum = np.sum(np.abs(cummega['weight']))
-cummega['scaled_weight'] = cummega['weight'] / scaled_weight_sum
-cummega['weighted_fwd_return_1'] = cummega['fwd_return_1'] * cummega['scaled_weight']
-cummega['weighted_fwd_return_2'] = cummega['fwd_return_2'] * cummega['scaled_weight']
-cummega['weighted_fwd_return_3'] = cummega['fwd_return_3'] * cummega['scaled_weight']
-cummega = cummega.groupby('date').agg(
-    log_factor_return_1=('weighted_fwd_return_1', lambda x: np.log(np.sum(x) + 1)),
-    log_factor_return_2=('weighted_fwd_return_2', lambda x: np.log(np.sum(x) + 1)),
-    log_factor_return_3=('weighted_fwd_return_3', lambda x: np.log(np.sum(x) + 1))
-).reset_index()
-cummega = cummega.sort_values(by='date')
-cummega['gap_0'] = np.cumsum(cummega['log_factor_return_1'])
-cummega['gap_1'] = np.cumsum(cummega['log_factor_return_2'])
-cummega['gap_2'] = np.cumsum(cummega['log_factor_return_3'])
-long_df = pd.melt(cummega, id_vars='date', value_vars=['gap_0', 'gap_1', 'gap_2'], var_name='gap', value_name='cumreturn')
-long_df.to_csv("long_df.csv", index=False)

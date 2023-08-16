@@ -12,10 +12,6 @@ cum15psma = pd.read_csv('cum15psma.csv')
 cum20psma = pd.read_csv('cum20psma.csv')
 cum25psma = pd.read_csv('cum25psma.csv')
 cum30psma = pd.read_csv('cum30psma.csv')
-cumdsh_15 = pd.read_csv('cumdsh_15.csv')
-cumdsh_20 = pd.read_csv('cumdsh_20.csv')
-cumdsh_25 = pd.read_csv('cumdsh_25.csv')
-cumdsh_30 = pd.read_csv('cumdsh_30.csv')
 cumrrp_15 = pd.read_csv('cumrrp_15.csv')
 cumrrp_20 = pd.read_csv('cumrrp_20.csv')
 cumrrp_25 = pd.read_csv('cumrrp_25.csv')
@@ -36,7 +32,7 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum10mom.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 10mom')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of mom_10')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
@@ -53,7 +49,7 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum15mom.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 15mom')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of mom_15')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
@@ -70,7 +66,7 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum20mom.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 20mom')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of mom_20')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
@@ -87,7 +83,7 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum25mom.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 25mom')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of mom_25')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
@@ -104,7 +100,7 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum15psma.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 15psma')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of psma_15')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
@@ -121,7 +117,7 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum20psma.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 20psma')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of psma_20')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
@@ -138,7 +134,7 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum25psma.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 25psma')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of psma_25')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
@@ -155,78 +151,11 @@ fig, ax = plt.subplots()
 for n_day_ahead, group_data in cum30psma.groupby('n_day_ahead'):
     ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
 # Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 30psma')
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of psma_30')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative Return')
 # Lấy các ngày cần hiển thị trên trục x
 x_ticks_values = get_year_start_dates(cum30psma['date'])
-# Thiết lập nhãn trục x chỉ hiển thị các ngày cần thiết
-ax.set_xticks(x_ticks_values)
-ax.set_xticklabels(x_ticks_values, rotation=45, ha='right')
-# Thêm chú thích
-ax.legend()
-# Hiển thị đồ thị bằng Streamlit
-st.pyplot(fig)
-
-
-fig, ax = plt.subplots()
-for n_day_ahead, group_data in cumdsh_15.groupby('n_day_ahead'):
-    ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
-# Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 15dsh')
-ax.set_xlabel('Date')
-ax.set_ylabel('Cumulative Return')
-# Lấy các ngày cần hiển thị trên trục x
-x_ticks_values = get_year_start_dates(cumdsh_15['date'])
-# Thiết lập nhãn trục x chỉ hiển thị các ngày cần thiết
-ax.set_xticks(x_ticks_values)
-ax.set_xticklabels(x_ticks_values, rotation=45, ha='right')
-# Thêm chú thích
-ax.legend()
-# Hiển thị đồ thị bằng Streamlit
-st.pyplot(fig)
-
-fig, ax = plt.subplots()
-for n_day_ahead, group_data in cumdsh_20.groupby('n_day_ahead'):
-    ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
-# Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 20dsh')
-ax.set_xlabel('Date')
-ax.set_ylabel('Cumulative Return')
-# Lấy các ngày cần hiển thị trên trục x
-x_ticks_values = get_year_start_dates(cumdsh_20['date'])
-# Thiết lập nhãn trục x chỉ hiển thị các ngày cần thiết
-ax.set_xticks(x_ticks_values)
-ax.set_xticklabels(x_ticks_values, rotation=45, ha='right')
-# Thêm chú thích
-ax.legend()
-# Hiển thị đồ thị bằng Streamlit
-st.pyplot(fig)
-fig, ax = plt.subplots()
-for n_day_ahead, group_data in cumdsh_25.groupby('n_day_ahead'):
-    ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
-# Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 25dsh')
-ax.set_xlabel('Date')
-ax.set_ylabel('Cumulative Return')
-# Lấy các ngày cần hiển thị trên trục x
-x_ticks_values = get_year_start_dates(cumdsh_25['date'])
-# Thiết lập nhãn trục x chỉ hiển thị các ngày cần thiết
-ax.set_xticks(x_ticks_values)
-ax.set_xticklabels(x_ticks_values, rotation=45, ha='right')
-# Thêm chú thích
-ax.legend()
-# Hiển thị đồ thị bằng Streamlit
-st.pyplot(fig)
-fig, ax = plt.subplots()
-for n_day_ahead, group_data in cumdsh_30.groupby('n_day_ahead'):
-    ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
-# Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of 30dsh')
-ax.set_xlabel('Date')
-ax.set_ylabel('Cumulative Return')
-# Lấy các ngày cần hiển thị trên trục x
-x_ticks_values = get_year_start_dates(cumdsh_30['date'])
 # Thiết lập nhãn trục x chỉ hiển thị các ngày cần thiết
 ax.set_xticks(x_ticks_values)
 ax.set_xticklabels(x_ticks_values, rotation=45, ha='right')
@@ -304,22 +233,6 @@ ax.legend()
 # Hiển thị đồ thị bằng Streamlit
 st.pyplot(fig)
 
-fig, ax = plt.subplots()
-for n_day_ahead, group_data in cumsmaf_2_20.groupby('n_day_ahead'):
-    ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
-# Thiết lập tiêu đề và nhãn trục
-ax.set_title('Top 10 coins by market cap weighted in proportion to rank of smaf_2_20')
-ax.set_xlabel('Date')
-ax.set_ylabel('Cumulative Return')
-# Lấy các ngày cần hiển thị trên trục x
-x_ticks_values = get_year_start_dates(cumsmaf_2_20['date'])
-# Thiết lập nhãn trục x chỉ hiển thị các ngày cần thiết
-ax.set_xticks(x_ticks_values)
-ax.set_xticklabels(x_ticks_values, rotation=45, ha='right')
-# Thêm chú thích
-ax.legend()
-# Hiển thị đồ thị bằng Streamlit
-st.pyplot(fig)
 
 fig, ax = plt.subplots()
 for n_day_ahead, group_data in cumsmaf_2_20.groupby('n_day_ahead'):
@@ -374,17 +287,20 @@ ax.legend()
 # Hiển thị đồ thị bằng Streamlit
 st.pyplot(fig)
 
-plt.clf()
-long_df = pd.read_csv('long_df.csv')
+fig, ax = plt.subplots()
+for n_day_ahead, group_data in cumsmaf_5_30.groupby('n_day_ahead'):
+    ax.plot(group_data['date'], group_data['cumreturn'], label=f'n_day_ahead={n_day_ahead}')
+# Thiết lập tiêu đề và nhãn trục
+ax.set_title('Top 10 coins by market cap weighted in proportion to rank of smaf_5_30')
+ax.set_xlabel('Date')
+ax.set_ylabel('Cumulative Return')
+# Lấy các ngày cần hiển thị trên trục x
+x_ticks_values = get_year_start_dates(cumsmaf_5_30['date'])
+# Thiết lập nhãn trục x chỉ hiển thị các ngày cần thiết
+ax.set_xticks(x_ticks_values)
+ax.set_xticklabels(x_ticks_values, rotation=45, ha='right')
+# Thêm chú thích
+ax.legend()
+# Hiển thị đồ thị bằng Streamlit
+st.pyplot(fig)
 
-# Vẽ biểu đồ sử dụng matplotlib
-plt.plot(long_df[long_df['gap']=='gap_0']['date'], long_df[long_df['gap']=='gap_0']['cumreturn'], color='blue', label='gap_0')
-plt.plot(long_df[long_df['gap']=='gap_1']['date'], long_df[long_df['gap']=='gap_1']['cumreturn'], color='green', label='gap_1')
-plt.plot(long_df[long_df['gap']=='gap_2']['date'], long_df[long_df['gap']=='gap_2']['cumreturn'], color='red', label='gap_2')
-
-plt.title('Cumulative Returns Long/Short MegaFactor')
-plt.xlabel('Date')
-plt.ylabel('Cumulative Return')
-plt.legend()
-
-st.pyplot()
