@@ -2,7 +2,7 @@ name: run prepared visual
 
 on:
   schedule:
-    - cron: "00 04 * * *"
+    - cron: "00 01 * * *"
 
 jobs:
   build:

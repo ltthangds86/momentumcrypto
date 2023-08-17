@@ -37,5 +37,7 @@ result_df['rankrrp_30'] = result_df.groupby('date')['rrp_30'].rank()
 result_df = result_df[['ticker','date','cap_rank','rankmom_10','rankmom_15','rankmom_20','rankmom_25','rankpsma_15','rankpsma_20','rankpsma_25','rankpsma_30','ranksmaf_2_20','ranksmaf_3_20','ranksmaf_3_25','ranksmaf_5_30','rankrrp_15','rankrrp_20','rankrrp_25','rankrrp_30' ]]
 # In ra DataFrame sau khi lọc
 print(result_df)
+result_df = result_df.reset_index(drop=True)
+pd.options.display.float_format = '{:,.0f}'.format
 st.dataframe(result_df)
 
