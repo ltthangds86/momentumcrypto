@@ -5,25 +5,37 @@ import streamlit as st
 import pandas as pd
 
 # Đọc dữ liệu từ tệp CSV
-df = pd.read_csv('top50.csv')
-
-# Chuyển đổi cột 'date' sang định dạng datetime
+df = pd.read_csv('voldf.csv')
 df['date'] = pd.to_datetime(df['date'])
 
-# Tìm ngày cuối cùng trong dữ liệu
-latest_date = df['date'].max()
+# Tìm ngày lớn nhất
+max_date = df['date'].max()
+print(max_date)
 
-# Lấy thông tin các đồng tiền có vốn hóa thị trường nằm trong top 20 ở ngày cuối cùng
-top_20_tickers = df[df['date'] == latest_date].nlargest(20, 'market_cap')['ticker']
+# Tính khoảng cách ngày giữa mỗi ngày và ngày lớn nhất
+df['date_diff'] = (max_date - df['date']).dt.days
 
-# Lọc dữ liệu ban đầu chỉ để lại các đồng tiền nằm trong top 20 ở ngày cuối cùng
-filtered_data = df[df['ticker'].isin(top_20_tickers)]
 
-# Tính ngày bắt đầu của khoảng 30 ngày gần nhất
-start_date = latest_date - pd.DateOffset(days=30)
+# Lọc ra các hàng có khoảng cách ngày nhỏ hơn hoặc bằng 10
+result_df = df[df['date_diff'] <= 9]
+result_df['rankmom_10'] = result_df.groupby('date')['mom_10'].rank()
+result_df['rankmom_15'] = result_df.groupby('date')['mom_15'].rank()
+result_df['rankmom_20'] = result_df.groupby('date')['mom_20'].rank()
+result_df['rankmom_25'] = result_df.groupby('date')['mom_25'].rank()
+result_df['rankpsma_15'] = result_df.groupby('date')['psma_15'].rank()
+result_df['rankpsma_20'] = result_df.groupby('date')['psma_20'].rank()
+result_df['rankpsma_25'] = result_df.groupby('date')['psma_25'].rank()
+result_df['rankpsma_30'] = result_df.groupby('date')['psma_30'].rank()
+result_df['ranksmaf_2_20'] = result_df.groupby('date')['smaf_2_20'].rank()
+result_df['ranksmaf_3_20'] = result_df.groupby('date')['smaf_3_20'].rank()
+result_df['ranksmaf_3_25'] = result_df.groupby('date')['smaf_3_25'].rank()
+result_df['ranksmaf_5_30'] = result_df.groupby('date')['smaf_5_30'].rank()
+result_df['rankrrp_15'] = result_df.groupby('date')['rrp_15'].rank()
+result_df['rankrrp_20'] = result_df.groupby('date')['rrp_20'].rank()
+result_df['rankrrp_25'] = result_df.groupby('date')['rrp_25'].rank()
+result_df['rankrrp_30'] = result_df.groupby('date')['rrp_30'].rank()
+result_df = result_df[['ticker','date','cap_rank','rankmom_10','rankmom_15','rankmom_20','rankmom_25','rankpsma_15','rankpsma_20','rankpsma_25','rankpsma_30','ranksmaf_2_20','ranksmaf_3_20','ranksmaf_3_25','ranksmaf_5_30','rankrrp_15','rankrrp_20','rankrrp_25','rankrrp_30' ]]
+# In ra DataFrame sau khi lọc
+print(result_df)
+st.dataframe(result_df)
 
-# Lọc dữ liệu đã lọc trước để chỉ lấy thông tin cho 30 ngày gần nhất
-filtered_data_30_days = filtered_data[(filtered_data['date'] >= start_date) & (filtered_data['date'] <= latest_date)]
-
-# Hiển thị kết quả
-print(filtered_data_30_days)
