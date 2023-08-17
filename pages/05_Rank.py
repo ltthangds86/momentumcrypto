@@ -3,6 +3,7 @@ import numpy as np
 import copy
 import streamlit as st 
 import pandas as pd
+from datetime import datetime
 
 # Đọc dữ liệu từ tệp CSV
 df = pd.read_csv('voldf.csv')
@@ -47,5 +48,6 @@ columns_to_convert = [
 
 # Chuyển đổi các cột sang kiểu integer
 result_df[columns_to_convert] = result_df[columns_to_convert].astype(int)
+result_df['date'] = result_df['date'].apply(lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M:%S').strftime('%Y-%m-%d'))
 st.dataframe(result_df)
 
