@@ -48,10 +48,6 @@ columns_to_convert = [
 
 # Chuyển đổi các cột sang kiểu integer
 result_df[columns_to_convert] = result_df[columns_to_convert].astype(int)
-result_df["date"] = [
-        datetime.datetime.strptime(
-            str(target_date).split(" ")[0], '%Y-%m-%d').date()
-        for target_date in result_df["date"]
-    ]
+result_df['date'] = pd.to_datetime(result_df['date']).dt.strftime('%Y-%m-%d')
 st.dataframe(result_df)
 
