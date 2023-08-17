@@ -38,6 +38,14 @@ result_df = result_df[['ticker','date','cap_rank','rankmom_10','rankmom_15','ran
 # In ra DataFrame sau khi lọc
 print(result_df)
 result_df = result_df.reset_index(drop=True)
-result_df = result_df.applymap('{:.0f}'.format)
+columns_to_convert = [
+    'cap_rank', 'rankmom_10', 'rankmom_15', 'rankmom_20', 'rankmom_25',
+    'rankpsma_15', 'rankpsma_20', 'rankpsma_25', 'rankpsma_30',
+    'ranksmaf_2_20', 'ranksmaf_3_20', 'ranksmaf_3_25', 'ranksmaf_5_30',
+    'rankrrp_15', 'rankrrp_20', 'rankrrp_25', 'rankrrp_30'
+]
+
+# Chuyển đổi các cột sang kiểu integer
+result_df[columns_to_convert] = result_df[columns_to_convert].astype(int)
 st.dataframe(result_df)
 
