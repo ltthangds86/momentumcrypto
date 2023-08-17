@@ -38,6 +38,6 @@ result_df = result_df[['ticker','date','cap_rank','rankmom_10','rankmom_15','ran
 # In ra DataFrame sau khi lọc
 print(result_df)
 result_df = result_df.reset_index(drop=True)
-pd.options.display.float_format = '{:,.0f}'.format
+st.set_option('dataframe.value_format', '{:.0f}'.format)
 st.dataframe(result_df)
 
