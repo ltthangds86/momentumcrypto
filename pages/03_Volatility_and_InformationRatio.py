@@ -233,4 +233,16 @@ dataframes = [cum10mom, cum15mom, cum20mom, cum25mom, cum15psma, cum20psma, cum2
 combined_df = pd.concat(dataframes, ignore_index=True)
 print(combined_df)
 
+
+st.markdown('### Volatility and Information Ratio')
+
+st.markdown('----')
+st.markdown('# Volatility')
+st.markdown('The higher the volatility, the greater the risk.')
+
+st.markdown('----')
+st.markdown('# Information Ratio')
+st.markdown('Information ratio is directly proportional to returns and inversely proportional to volatility.')
+
+
 st.dataframe(combined_df)

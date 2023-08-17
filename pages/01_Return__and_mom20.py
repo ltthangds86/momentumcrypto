@@ -18,32 +18,6 @@ df['mom_10'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) -
 df['mom_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) - np.log(x.shift(15)))
 df['mom_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) - np.log(x.shift(20)))
 df['mom_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x) - np.log(x.shift(25)))
-#SMA factor
-df['psma_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=15).mean())
-df['psma_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=20).mean())
-df['psma_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=25).mean())
-df['psma_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x / x.rolling(window=30).mean())
-# SMA ratio factor
-df['smaf_2_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=2).mean()/ x.rolling(window=20).mean())
-df['smaf_3_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=20).mean())
-df['smaf_3_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=3).mean()/ x.rolling(window=25).mean())
-df['smaf_5_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: x.rolling(window=5).mean()/ x.rolling(window=30).mean())
-# Rolling price zscore over recent history
-df['rrp_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=15).mean())/ x.rolling(window=15).std())
-df['rrp_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=20).mean())/ x.rolling(window=20).std())
-df['rrp_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=25).mean())/ x.rolling(window=25).std())
-df['rrp_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: (x - x.rolling(window=30).mean())/ x.rolling(window=30).std())
-# Rolling_days_since_high(x)
-def rolling_days_since_high(x):
-    idx_of_high = np.argmax(x)
-    days_since_high = len(x) - idx_of_high
-    return days_since_high
-
-# daysincehigh=-rolling
-df['dsh_15'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=15).apply(rolling_days_since_high, raw=True) )
-df['dsh_20'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=20).apply(rolling_days_since_high, raw=True) )
-df['dsh_25'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=25).apply(rolling_days_since_high, raw=True) )
-df['dsh_30'] = df.groupby('ticker')['price_usd'].transform(lambda x: -x.rolling(window=30).apply(rolling_days_since_high, raw=True) )
 # Calculate returns
 df['fwd_log_return_1'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x.shift(-1) / x))
 df['fwd_log_return_2'] = df.groupby('ticker')['price_usd'].transform(lambda x: np.log(x.shift(-2) / x.shift(-1)))

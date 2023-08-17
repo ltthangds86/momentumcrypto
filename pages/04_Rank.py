@@ -49,5 +49,17 @@ columns_to_convert = [
 # Chuyển đổi các cột sang kiểu integer
 result_df[columns_to_convert] = result_df[columns_to_convert].astype(int)
 result_df['date'] = pd.to_datetime(result_df['date']).dt.strftime('%Y-%m-%d')
+
+st.markdown('### Rank')
+
+st.markdown('----')
+st.markdown('# Cap_rank')
+st.markdown('Cap_rank is arranged in descending order, with the largest market capitalization cryptocurrency having a cap_rank of 1.')
+
+st.markdown('----')
+st.markdown('# Rank momentum factor')
+st.markdown('Rank momentum factor is arranged in ascending order, with the smallest momentum factor cryptocurrency having a cap_rank of 1.')
+
+
 st.dataframe(result_df)
 
