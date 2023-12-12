@@ -1,7 +1,7 @@
 name: run top50 CSV 
 on:
   schedule:
-    - cron: "15 00 * * *"
+    - cron: "15 09 * * *"
 
 jobs:
   build:
