@@ -9,9 +9,9 @@ from pycoingecko import CoinGeckoAPI
 cg = CoinGeckoAPI()
 response = cg.get_coins_markets(vs_currency="USD")
 response[0]
-coins_list = [coin["id"] for coin in response[:50]]
+coins_list = [coin["id"] for coin in response[:40]]
 coins_list
-n_days = (datetime.date.today() - datetime.date(2017,12,31)).days
+n_days = (datetime.date.today() - datetime.date(2018,12,31)).days
 def get_date_information(value):
     """Function to get the datetime from epoch time"""
     return datetime.datetime.fromtimestamp(value[0]/1000)
